@@ -1,20 +1,21 @@
 'use client';
 
-export default function Square({ value, onSquareClick }) {
-  let cells = null;
+import { useEffect } from "react";
 
-  if (typeof window !== "undefined") {
-    cells = document.querySelectorAll(".cell");
+export default function Square({ value, onSquareClick, borderStyle }) {
+  let className = "cell bg-white border-solid border-gray-900 text-2xl font-bold p-0 w-full text-center " + borderStyle;
+
+  //Set height equal to width
+  useEffect(() => {
+    let cells = document.querySelectorAll(".cell");
+    let width = cells[0].offsetWidth + "px";
     cells.forEach((cell) => {
-      cell.style.height = cell.offsetWidth + "px";
+      cell.style.height = width;
     })
-  }
+  })
 
   return (
-    <button
-      className="cell bg-white border-solid border-gray-900 border-2 text-2xl font-bold p-0 m-1 w-full h-9 text-center"
-      onClick={onSquareClick}
-    >
+    <button className={className} onClick={onSquareClick}>
       {value}
     </button>
   )

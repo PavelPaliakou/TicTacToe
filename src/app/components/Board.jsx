@@ -2,45 +2,55 @@
 import Square from "./Square.jsx";
 
 export default function Board({ xIsNext, squares, onPlay }) {
-  const squaresInRow = 3;
+  const squaresInRow = 5;
+  const gameFiled = createGameField(squaresInRow);
 
-  function handleClick(i) {
-    if (squares[i] || calculateWinner(squares)) {
+  function handleClick(cell) {
+    if (squares[cell] || calculateWinner(squares)) {
       return;
     }
 
     const nextSquares = squares.slice();
     if (xIsNext) {
-      nextSquares[i] = "X";
+      nextSquares[cell] = "X";
     } else {
-      nextSquares[i] = "O";
+      nextSquares[cell] = "O";
     }
 
     onPlay(nextSquares);
   }
 
-  function createBoard(gameField) {
+  function renderField(gameField) {
     return (
-      gameField.map((rowIndex) => createRow(rowIndex))
+      gameField.map((row, rowIndex) => (
+        <div key={rowIndex} className="w-full flex flex-row flex-nowrap">
+          {
+            row.map((cell, cellIndex) => {
+              let style = "";
+
+              if (rowIndex != row.length - 1) {
+                style = "border-b-2"
+              }
+
+              if (cellIndex != row.length - 1) {
+                style += " border-r-2"
+              }
+
+              return (
+                < Square
+                  key={cell}
+                  value={squares[cell]}
+                  onSquareClick={() => handleClick(cell, cell)}
+                  borderStyle={style}
+                />
+              )
+
+            })
+          }
+        </div>
+      ))
     )
   }
-
-  function createRow(row) {
-    return (
-      <div key={row} className="w-full flex flex-row flex-nowrap">
-        {
-          row.map((cell) =>
-            <Square
-              key={cell}
-              value={squares[cell]}
-              onSquareClick={() => handleClick(cell)}
-            />
-          )
-        }
-      </div>
-    )
-  }
-
 
   const winner = calculateWinner(squares);
   let status;
@@ -53,20 +63,60 @@ export default function Board({ xIsNext, squares, onPlay }) {
 
   return (
     <>
-      {createBoard(createGameField(squaresInRow))}
+      {renderField(gameFiled)}
       <div className="text-4xl">{status}</div>
     </>
   );
 }
 
-function  checkLine(cx, cy, vx, vy, l, ox) {
-  if (cx + l * vx > linesCount || cy + l * vy > linesCount || cy + l * vy < -1 || cx + l * vx < -1) {
-      return false;
+
+
+
+function isFieldFull(gameFiled, squaresInRow) {
+  for (let i = 0; i < squaresInRow; i++) {
+      for (let j = 0; j < squaresInRow; j++) {
+          if (gameFiled[i][j] == EMPTY) {
+              return false;
+          }
+      }
+  }
+  gameOver = true;
+  gameOverMsg = "DRAW";
+  return true;
+}
+
+function checkWin(playerSymbol, squaresInRow, winLength) {
+  for (let i = 0; i < squaresInRow; i++) {
+    for (let j = 0; j < squaresInRow; j++) {
+      if (checkLine(i, j, 1, 0, winLength, playerSymbol) ||
+        checkLine(i, j, 0, 1, winLength, playerSymbol) ||
+        checkLine(i, j, 1, 1, winLength, playerSymbol) ||
+        checkLine(i, linesCount - j, 1, -1, winLength, playerSymbol)) {
+        gameOver = true;
+        if (playerSymbol == PLAYER1_DOT) {
+          gameOverMsg = "PLAYER 1 WON";
+        }
+        if (playerSymbol == PLAYER2_DOT) {
+          gameOverMsg = "PLAYER 2 WON";
+        }
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+function checkLine(rowIndex, colIndex, directionX, directionY, winLength, playerSymbol) {
+  if (rowIndex + winLength * directionX > linesCount ||
+    colIndex + winLength * directionY > linesCount ||
+    colIndex + winLength * directionY < -1 ||
+    rowIndex + winLength * directionX < -1) {
+    return false;
   }
   for (let i = 0; i < l; i++) {
-      if (field[cx + i * vx][cy + i * vy] != ox) {
-          return false;
-      }
+    if (field[colIndex + i * directionX][colIndex + i * directionY] != playerSymbol) {
+      return false;
+    }
   }
   return true;
 }
@@ -92,13 +142,15 @@ function calculateWinner(squares) {
 }
 
 function createGameField(squaresInRow) {
-  let index = 0;
+  let filler = 0;
   const gameField = [];
+
   for (let i = 0; i < squaresInRow; i++) {
     gameField[i] = [];
     for (let j = 0; j < squaresInRow; j++) {
-      gameField[i][j] = index++;
+      gameField[i][j] = filler++;
     }
   }
+
   return gameField;
 }
