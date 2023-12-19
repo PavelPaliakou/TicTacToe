@@ -6,8 +6,9 @@ let playerSymbol = "";
 let gameStatusMsg = "";
 
 export default function TestBoard({ squaresInRow, winLength }) {
-    const [gameField, setGameField] = useState(createGameField);
+    const [gameField, setGameField] = useState(createGameField());
     const [isNextTurn, setIsNextTurn] = useState(true);
+    // let AITurn = [[Math.floor(Math.random() * squaresInRow)],[Math.floor(Math.random() * squaresInRow)]];
 
     function createGameField() {
         let filler = 0;
@@ -38,8 +39,9 @@ export default function TestBoard({ squaresInRow, winLength }) {
                 setGameField(nextGameField);
                 setIsNextTurn(!isNextTurn);
 
-                checkWin();
-                isFieldFull();
+                if(!checkWin()){
+                    isFieldFull();
+                }
 
             } else {
                 console.log("this cell is already taken");

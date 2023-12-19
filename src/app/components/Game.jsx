@@ -36,9 +36,11 @@ export default function Game() {
 
   function handleSetBoardDimension(event) {
     setBoardDimension(event.target.value);
+    if(boardWinLength > event.target.value) {
+      setBoardWinLength(event.target.value);
+    }
   }
 
-  //FIXME: sometimes value doesn't change when dimension decreases
   function handleSetBoardWinLength(event) {
     let winLength = event.target.value;
     if (winLength > boardDimension) {
@@ -51,24 +53,39 @@ export default function Game() {
     <main className="flex flex-col items-center">
       <div className="max-w-5xl w-full flex flex-col items-center p-4 gap-4">
         <h1 className="text-8xl">Tic Tac Toe</h1>
+
         <div className="flex gap-4 flex-col">
-          <div className="flex flex-col items-center">
-            <input type="range" min="3" max="5" value={boardDimension} onChange={handleSetBoardDimension} name="dimension-range" id="dimension-range" />
-            <p>Dimension <span id="dimension-value">{boardDimension}</span></p>
+
+          <div className="flex flex-col items-center">           
+            <div className="flex flex-row gap-2">
+              <span>3</span>
+              <input type="range" min="3" max="5" value={boardDimension} onChange={handleSetBoardDimension} />
+              <span>5</span>
+            </div>
+            <p>Dimension <span>{boardDimension}</span></p>
           </div>
+
           <div className="flex flex-col items-center">
-            <input type="range" min="3" max={boardDimension} onChange={handleSetBoardWinLength} name="win-length-range" id="win-length-range" />
-            <p>Length to win <span id="win-length-value">{boardWinLength}</span></p>
+            <div className="flex flex-row gap-2">
+              <span>3</span>
+              <input type="range" min="3" max={boardDimension} onChange={handleSetBoardWinLength} />
+              <span>{boardDimension}</span>
+            </div>
+            <p>Length to win <span>{boardWinLength}</span></p>
           </div>
+          
         </div>
+
         <div className="w-full max-w-xs flex flex-col items-center">
           {/* <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} /> */}
-          <Board squaresInRow={5} winLength={4}/>
+          <Board key={boardDimension + boardWinLength} squaresInRow={boardDimension} winLength={boardWinLength}/>
         </div>
+
         <div className="flex flex-col items-center gap-4">
           <h1>History</h1>
           <ol>{moves}</ol>
         </div>
+
       </div>
     </main>
   );
