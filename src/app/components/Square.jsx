@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-export default function Square({ value, onSquareClick, borderStyle }) {
+export default function Square({ playerSymbol, onSquareClick, borderStyle }) {
   let className = "cell bg-white border-solid border-gray-900 text-2xl font-bold p-0 w-full text-center " + borderStyle;
 
   //Set height equal to width
@@ -16,7 +16,7 @@ export default function Square({ value, onSquareClick, borderStyle }) {
 
   return (
     <button className={className} onClick={onSquareClick}>
-      {value}
+      {playerSymbol}
     </button>
   )
 }
