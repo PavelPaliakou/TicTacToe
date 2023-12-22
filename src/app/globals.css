@@ -7,9 +7,6 @@
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
   background-color: rgb(237, 237, 237);
-  background-image: url("/free-notebook-paper-vector.jpg");
-  background-repeat: no-repeat;
-  background-position: center;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -18,4 +15,15 @@
     --background-start-rgb: 0, 0, 0;
     --background-end-rgb: 0, 0, 0;
   }
+}
+
+.bg-img {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: url("/free-notebook-paper-vector.jpg");
+  background-repeat: no-repeat;
+  background-position: center;
+  /* background-size: cover; */
+  filter: blur(2px);
 }

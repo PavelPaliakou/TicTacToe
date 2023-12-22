@@ -7,7 +7,7 @@ import Board from "./Board.jsx";
 export default function Game() {
   const [boardDimension, setBoardDimension] = useState(3);
   const [boardWinLength, setBoardWinLength] = useState(3);
-  const [gameType, setGameType] = useState(true);
+  const [gameType, setGameType] = useState("true");
   const [newGame, setNewGame] = useState(false);
 
   function handleNewGame() {
@@ -34,9 +34,9 @@ export default function Game() {
   }
 
   return (
-    <main className="flex flex-col items-center">
+    <main className="flex flex-col items-center text-2xl">
       <div className="max-w-5xl w-full flex flex-col items-center px-4">
-        <h1 className="text-clamp">Tic Tac Toe</h1>
+        <h1 className="text-clamp leading-tight">Tic Tac Toe</h1>
 
         <div className="flex gap-4 flex-col">
 
@@ -65,18 +65,18 @@ export default function Game() {
           </div>
 
           <div className="flex flex-row justify-evenly">
-            <div className="flex flex-col items-center">
-              <input type="radio" name="gameType" value={true} onChange={handleGameType} defaultChecked />
+            <div className="flex flex-row items-center gap-4">
+              <input type="radio" name="gameType" value={"true"} onChange={handleGameType} defaultChecked />
               <label htmlFor="gameType">PvP</label>
             </div>
-            <div className="flex flex-col items-center">
-              <input type="radio" name="gameType" value={false} onChange={handleGameType} />
+            <div className="flex flex-row items-center gap-4">
+              <input type="radio" name="gameType" value={"false"} onChange={handleGameType} />
               <label htmlFor="gameType">PvAI</label>
             </div>
           </div>
         </div>
 
-        <div className="w-full max-w-xs flex flex-col items-center">
+        <div className="w-full max-w-xs flex flex-col items-center my-4">
           <Board
             key={boardDimension + boardWinLength + gameType + newGame}
             squaresInRow={boardDimension}
