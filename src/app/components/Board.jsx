@@ -1,14 +1,177 @@
 'use client';
 import Square from "./Square.jsx";
 import { useState } from "react";
-let gameOver = false;
-let playerSymbol = "";
-let gameStatusMsg = "";
+let playerMark = "";
+let variable = 0;
 
-export default function TestBoard({ squaresInRow, winLength }) {
+//TODO: change color for win sequence
+
+export default function TestBoard({ squaresInRow, winLength, gameType }) {
     const [gameField, setGameField] = useState(createGameField());
     const [isNextTurn, setIsNextTurn] = useState(true);
-    // let AITurn = [[Math.floor(Math.random() * squaresInRow)],[Math.floor(Math.random() * squaresInRow)]];
+    const [gameOver, setGameOver] = useState(false);
+    const [gameStatusMsg, setGameStatusMsg] = useState("");
+    console.log("gameOver = " + gameOver + " message = " + gameStatusMsg);
+
+    function AITurn() {
+        console.log("AI turn and check player wining sequence");
+        //If AI has wining sequence
+        for (let i = 0; i < gameField.length; i++) {
+            for (let j = 0; j < gameField.length; j++) {
+                if (!gameField[i][j]) {
+                    if (checkWin) {
+                        console.log("inside check player sequence")
+                        if (!isNextTurn) {
+                            playerMark = "X";
+                        } else {
+                            playerMark = "0";
+                        }
+                        gameField[i][j] = playerMark;
+                        return;
+                    }
+                }
+            }
+        }
+
+        console.log("Change player symbol to check AI winning sequence");
+
+        if (!isNextTurn) {
+            playerMark = "X";
+        } else {
+            playerMark = "0";
+        }
+
+        //If player has wining sequence then AI put its mark here
+        for (let i = 0; i < gameField.length; i++) {
+            for (let j = 0; j < gameField.length; j++) {
+                if (!gameField[i][j]) {
+                    if (checkWin) {
+                        gameField[i][j] = playerMark;
+                        return;
+                    }
+                }
+            }
+        }
+
+        //If AI and player haven't wining sequence then AI put random mark
+        console.log("Randomly put AI's mark on board");
+        let x = 0;
+        let y = 0;
+        do {
+            x = Math.floor(Math.random() * gameField.length);
+            y = Math.floor(Math.random() * gameField.length);
+        } while (!gameField[x][y]);
+
+        const nextGameField = gameField.slice();
+        nextGameField[x][y] = playerMark;
+
+        setGameField(nextGameField);
+
+    }
+
+    function handleClick(rowIndex, colIndex) {
+        if (!gameOver) {
+            if (!gameField[rowIndex][colIndex]) {
+                if (isNextTurn) {
+                    playerMark = "X";
+                } else {
+                    playerMark = "0";
+                }
+
+                const nextGameField = gameField.slice();
+                nextGameField[rowIndex][colIndex] = playerMark;
+                setGameField(nextGameField);
+
+                console.log("variable = " + variable);
+                variable += 10;
+                console.log("variable = " + variable);
+
+                if (checkWin()) {
+                    setGameOver(true);
+                    setGameStatusMsg(`Player ${playerMark} won!`);
+                } else {
+                    if (isFieldFull()) {
+                        setGameOver(true);
+                        setGameStatusMsg("DRAW");
+                    }
+                }
+
+                if (gameType) {
+                    setIsNextTurn(!isNextTurn);
+                } else {
+                    AITurn();  
+                }
+                
+            } else {
+                console.log("this cell is already taken");
+                return;
+            }
+        } else {
+            console.log("game is over");
+            return;
+        }
+    }
+
+    function checkGameStatus() {
+        if (checkWin()) {
+            setGameOver(true);
+            setGameStatusMsg(`Player ${playerMark} won!`);
+        } else {
+            if (isFieldFull()) {
+                setGameOver(true);
+                setGameStatusMsg("DRAW");
+            }
+        }
+    }
+
+    function isFieldFull() {
+        for (let i = 0; i < gameField.length; i++) {
+            for (let j = 0; j < gameField.length; j++) {
+                if (!gameField[i][j]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    function checkWin() {
+        /*check rows
+        checkLine(i, j, 1, 0, winLength, playerSymbol, gameField.length) ||
+        check columns
+        checkLine(i, j, 0, 1, winLength, playerSymbol, gameField.length) ||
+        check diagonals from top-left to bottom-right
+        checkLine(i, j, 1, 1, winLength, playerSymbol, gameField.length) ||
+        check diagonals from top-right to bottom-left
+        checkLine(i, gameField.length - j, 1, -1, winLength, playerSymbol, gameField.length)*/
+        for (let i = 0; i < gameField.length; i++) {
+            for (let j = 0; j < gameField.length; j++) {
+                if (checkLine(i, j, 1, 0, winLength, playerMark, gameField.length) ||
+                    checkLine(i, j, 0, 1, winLength, playerMark, gameField.length) ||
+                    checkLine(i, j, 1, 1, winLength, playerMark, gameField.length) ||
+                    checkLine(i, gameField.length - j, 1, -1, winLength, playerMark, gameField.length)) {
+
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    function checkLine(rowIndex, colIndex, directionX, directionY) {
+        if (rowIndex + winLength * directionX > gameField.length ||
+            colIndex + winLength * directionY > gameField.length ||
+            colIndex + winLength * directionY < -1 ||
+            rowIndex + winLength * directionX < -1) {
+            return false;
+        }
+        for (let i = 0; i < winLength; i++) {
+            if (gameField[rowIndex + i * directionX][colIndex + i * directionY] != playerMark) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     function createGameField() {
         let filler = 0;
@@ -22,88 +185,6 @@ export default function TestBoard({ squaresInRow, winLength }) {
         }
 
         return gameField;
-    }
-
-    function handleClickArray(rowIndex, colIndex) {
-        if (!gameOver) {
-            if (!gameField[rowIndex][colIndex]) {
-                if (isNextTurn) {
-                    playerSymbol = "X";
-                } else {
-                    playerSymbol = "0";
-                }
-        
-                const nextGameField = gameField.slice();
-                nextGameField[rowIndex][colIndex] = playerSymbol;
-        
-                setGameField(nextGameField);
-                setIsNextTurn(!isNextTurn);
-
-                if(!checkWin()){
-                    isFieldFull();
-                }
-
-            } else {
-                console.log("this cell is already taken");
-                return;
-            }
-        } else {
-            console.log("game is over");
-            return;
-        }
-    }
-
-    function isFieldFull() {
-        for (let i = 0; i < squaresInRow; i++) {
-            for (let j = 0; j < squaresInRow; j++) {
-                if (!gameField[i][j]) {
-                    return false;
-                }
-            }
-        }
-        gameOver = true;
-        gameStatusMsg = "DRAW";
-        return true;
-    }
-
-    // check rows
-    // checkLine(i, j, 1, 0, winLength, playerSymbol, squaresInRow) ||
-    // check columns
-    // checkLine(i, j, 0, 1, winLength, playerSymbol, squaresInRow) ||
-    // check diagonals from top-left to bottom-right
-    // checkLine(i, j, 1, 1, winLength, playerSymbol, squaresInRow) ||
-    // check diagonals from top-right to bottom-left
-    // checkLine(i, squaresInRow - j, 1, -1, winLength, playerSymbol, squaresInRow)
-    function checkWin() {
-        for (let i = 0; i < squaresInRow; i++) {
-            for (let j = 0; j < squaresInRow; j++) {
-                if (checkLine(i, j, 1, 0, winLength, playerSymbol, squaresInRow) ||
-                    checkLine(i, j, 0, 1, winLength, playerSymbol, squaresInRow) ||
-                    checkLine(i, j, 1, 1, winLength, playerSymbol, squaresInRow) ||
-                    checkLine(i, squaresInRow - j, 1, -1, winLength, playerSymbol, squaresInRow)) {
-
-                    gameOver = true;
-                    gameStatusMsg = `Player ${playerSymbol} won!`;
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    function checkLine(rowIndex, colIndex, directionX, directionY) {
-        if (rowIndex + winLength * directionX > squaresInRow ||
-            colIndex + winLength * directionY > squaresInRow ||
-            colIndex + winLength * directionY < -1 ||
-            rowIndex + winLength * directionX < -1) {
-            return false;
-        }
-        for (let i = 0; i < winLength; i++) {
-            if (gameField[rowIndex + i * directionX][colIndex + i * directionY] != playerSymbol) {
-                return false;
-            }
-        }
-        return true;
     }
 
     function renderField(gameField) {
@@ -127,7 +208,7 @@ export default function TestBoard({ squaresInRow, winLength }) {
                                 < Square
                                     key={uniqueKey}
                                     playerSymbol={gameField[rowIndex][colIndex]}
-                                    onSquareClick={() => handleClickArray(rowIndex, colIndex, cell)}
+                                    onSquareClick={() => handleClick(rowIndex, colIndex, cell)}
                                     borderStyle={style}
                                 />
                             )
@@ -142,7 +223,7 @@ export default function TestBoard({ squaresInRow, winLength }) {
     return (
         <>
             {renderField(gameField)}
-            <div className="text-4xl">{gameStatusMsg}</div>
+            <div className="text-4xl mt-12">{gameStatusMsg}</div>
         </>
     );
 }
