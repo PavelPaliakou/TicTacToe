@@ -32,7 +32,7 @@ export default function Game() {
   }
 
   return (
-    <main className="flex flex-col items-center text-2xl mt-8">
+    <main className="flex flex-col items-center text-2xl mt-12">
       <div className="max-w-5xl w-full flex flex-col items-center px-4">
         <h1 className="text-clamp leading-tight">Tic Tac Toe</h1>
 
