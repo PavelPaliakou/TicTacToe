@@ -2,8 +2,8 @@
 
 import { useEffect } from "react";
 
-export default function Square({ playerSymbol, onSquareClick, borderStyle }) {
-  let className = "cell border-solid border-gray-900 text-clampSm font-bold p-0 w-full text-center " + borderStyle;
+export default function Square({ playerSymbol, onSquareClick, squareStyle }) {
+  let className = "cell border-solid border-gray-900 text-5xl font-bold p-0 w-full text-center " + squareStyle;
 
   //Set height equal to width
   useEffect(() => {

@@ -2,8 +2,6 @@
 import { useState } from "react";
 import Board from "./Board.jsx";
 
-
-//TODO: change style for h1
 export default function Game() {
   const [boardDimension, setBoardDimension] = useState(3);
   const [boardWinLength, setBoardWinLength] = useState(3);
@@ -34,11 +32,11 @@ export default function Game() {
   }
 
   return (
-    <main className="flex flex-col items-center text-2xl">
+    <main className="flex flex-col items-center text-2xl mt-8">
       <div className="max-w-5xl w-full flex flex-col items-center px-4">
         <h1 className="text-clamp leading-tight">Tic Tac Toe</h1>
 
-        <div className="flex gap-4 flex-col">
+        <div className="flex flex-col">
 
           <div className="flex flex-col items-center">
             <div className="flex flex-row gap-2">
@@ -64,7 +62,7 @@ export default function Game() {
             <p>Length to win <span>{boardWinLength}</span></p>
           </div>
 
-          <div className="flex flex-row justify-evenly">
+          <div className="flex flex-row justify-evenly mt-4">
             <div className="flex flex-row items-center gap-4">
               <input type="radio" name="gameType" value={"true"} onChange={handleGameType} defaultChecked />
               <label htmlFor="gameType">PvP</label>
@@ -74,6 +72,7 @@ export default function Game() {
               <label htmlFor="gameType">PvAI</label>
             </div>
           </div>
+          
         </div>
 
         <div className="w-full max-w-xs flex flex-col items-center my-4">
@@ -86,7 +85,7 @@ export default function Game() {
         </div>
 
         <div className="flex flex-col items-center gap-4">
-          <button onClick={handleNewGame}>New game</button>
+          <button className="border-dashed hover:border-solid border-2 border-black px-4" onClick={handleNewGame}>New game</button>
         </div>
 
       </div>

@@ -2,9 +2,9 @@
 
 export default function Footer() {
     return (
-        <footer className="flex max-w-5xl mt-4 mx-auto px-4">
+        <footer className="flex max-w-5xl mt-4 mx-auto px-4 text-2xl">
             <div className="flex flex-row items-center justify-evenly w-full p-4 my-8">
-                <p>&copy; 2023 <a href="https://pavelpaliakou.netlify.app/">Pavel Paliakou</a> </p>
+                <p>&copy; 2023 <a href="https://pavelpaliakou.netlify.app/" target="_blank">Pavel Paliakou</a> </p>
                 <div className="flex flex-row gap-4">
                     <a href="https://github.com/PavelPaliakou" aria-label="github profile">
                         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 496 512">

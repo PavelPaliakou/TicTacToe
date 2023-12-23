@@ -14,7 +14,6 @@ module.exports = {
       },
       fontSize: {
         clamp: "clamp(5rem, 10vw, 6rem)",
-        clampSm: "clamp(2rem, 3vw, 6rem)",
       },
     },
   },

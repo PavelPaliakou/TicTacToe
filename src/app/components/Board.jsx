@@ -3,33 +3,73 @@ import Square from "./Square.jsx";
 import { useState } from "react";
 let playerMark = "";
 
-//TODO: change color for win sequence
-//TODO: REACT IS FUCKING BUL SHIT!!!!!!!!!!!!!!!!!!!
-
-//FIXME: check from top-right to bottom-left doesn't work
-
 export default function Board({ squaresInRow, winLength, gameType }) {
     const [gameField, setGameField] = useState(createGameField());
     const [isNextTurn, setIsNextTurn] = useState(true);
     let [gameOver, setGameOver] = useState(false);
-    let [gameStatusMsg, setGameStatusMsg] = useState("");
+    let [gameStatusMsg, setGameStatusMsg] = useState("Player X's turn");
+    let [winSequence, setWinSequence] = useState([]);
     const AIMark = "O";
+    let checkStatus = false;    //to avoid paint when play with AI
 
     console.log("gameOver = " + gameOver);
     console.log("message = " + gameStatusMsg);
-    
-    function AITurn() {
-        let testGameField = gameField.slice();
 
+    function handleClick(rowIndex, colIndex) {
+        if (!gameOver) {
+            if (!gameField[rowIndex][colIndex]) {
+                if (isNextTurn) {
+                    playerMark = "X";
+                } else {
+                    playerMark = "O";
+                }
+
+                gameField[rowIndex][colIndex] = playerMark;
+
+                checkGameStatus(playerMark);
+
+                if (!gameOver) {
+                    if (gameType === "true") {
+                        if (isNextTurn) {
+                            gameStatusMsg = `Player O's turn`;
+                        } else {
+                            gameStatusMsg = `Player X's turn`;
+                        }
+                        
+                        setIsNextTurn(!isNextTurn);
+                    } else {
+                        AITurn();
+                    }
+                }
+
+                checkGameStatus(AIMark);
+
+                const nextGameField = gameField.slice();
+                setGameField(nextGameField);
+
+                setGameOver(gameOver);
+                setGameStatusMsg(gameStatusMsg);
+
+            } else {
+                console.log("this cell is already taken");
+                return;
+            }
+        } else {
+            console.log("game is over");
+            return;
+        }
+    }
+
+    function AITurn() {
         //If AI has (winLength - 1) sequence, put AI's mark for win
         for (let i = 0; i < gameField.length; i++) {
             for (let j = 0; j < gameField.length; j++) {
                 if (!gameField[i][j]) {
                     gameField[i][j] = AIMark;
 
-                    console.log("AI has wining sequence? = " 
-                        + checkWin(AIMark + "in [" + i + "][" + j + "]"));
-                    
+                    console.log("Player has wining sequence in [" + i + "][" + j + "]? = "
+                        + checkWin(AIMark));
+
                     if (checkWin(AIMark)) {
                         gameField[i][j] = AIMark;
                         return;
@@ -46,8 +86,8 @@ export default function Board({ squaresInRow, winLength, gameType }) {
                 if (!gameField[i][j]) {
                     gameField[i][j] = playerMark;
 
-                    console.log("Player has wining sequence? = " 
-                        + checkWin(playerMark + "in [" + i + "][" + j + "]"));
+                    console.log("Player has wining sequence in [" + i + "][" + j + "]? = "
+                        + checkWin(playerMark));
 
                     if (checkWin(playerMark)) {
                         gameField[i][j] = AIMark;
@@ -71,46 +111,9 @@ export default function Board({ squaresInRow, winLength, gameType }) {
         gameField[x][y] = AIMark;
     }
 
-    function handleClick(rowIndex, colIndex) {
-        if (!gameOver) {
-            if (!gameField[rowIndex][colIndex]) {
-                if (isNextTurn) {
-                    playerMark = "X";
-                } else {
-                    playerMark = "O";
-                }
-
-                gameField[rowIndex][colIndex] = playerMark;
-                
-                checkGameStatus(playerMark)
-
-                if (!gameOver){
-                    if (gameType === "true") {
-                        setIsNextTurn(!isNextTurn);
-                    } else {
-                        AITurn();  
-                    }
-                }
-
-                checkGameStatus(AIMark)
-
-                const nextGameField = gameField.slice();
-                setGameField(nextGameField);
-
-                setGameOver(gameOver);
-                setGameStatusMsg(gameStatusMsg);
-                
-            } else {
-                console.log("this cell is already taken");
-                return;
-            }
-        } else {
-            console.log("game is over");
-            return;
-        }
-    }
-
     function checkGameStatus(mark) {
+        checkStatus = true;
+
         if (checkWin(mark)) {
             gameOver = true;
             gameStatusMsg = `Player ${mark} won!`;
@@ -120,6 +123,8 @@ export default function Board({ squaresInRow, winLength, gameType }) {
                 gameStatusMsg = "DRAW";
             }
         }
+
+        checkStatus = false;
     }
 
     function isFieldFull() {
@@ -141,13 +146,13 @@ export default function Board({ squaresInRow, winLength, gameType }) {
         check diagonals from top-left to bottom-right
         checkLine(i, j, 1, 1, mark)
         check diagonals from top-right to bottom-left
-        checkLine(i, gameField.length - j, 1, -1, mark))*/
+        checkLine(i, (gameField.length - 1 - j), 1, -1, mark))*/
         for (let i = 0; i < gameField.length; i++) {
             for (let j = 0; j < gameField.length; j++) {
                 if (checkLine(i, j, 1, 0, mark) ||
                     checkLine(i, j, 0, 1, mark) ||
                     checkLine(i, j, 1, 1, mark) ||
-                    checkLine(i, gameField.length - j, 1, -1, gameField, mark)) {
+                    checkLine(i, (gameField.length - 1 - j), 1, -1, mark)) {
 
                     return true;
                 }
@@ -155,7 +160,7 @@ export default function Board({ squaresInRow, winLength, gameType }) {
         }
         return false;
     }
-
+    
     function checkLine(rowIndex, colIndex, directionX, directionY, mark) {
         if (rowIndex + winLength * directionX > gameField.length ||
             colIndex + winLength * directionY > gameField.length ||
@@ -163,11 +168,21 @@ export default function Board({ squaresInRow, winLength, gameType }) {
             rowIndex + winLength * directionX < -1) {
             return false;
         }
+        
+        const tempWinSequence = [];
+
         for (let i = 0; i < winLength; i++) {
             if (gameField[rowIndex + i * directionX][colIndex + i * directionY] != mark) {
                 return false;
             }
+            tempWinSequence.push([rowIndex + i * directionX, colIndex + i * directionY]);
         }
+
+        //Set win sequence if it not AI's turn check
+        if((tempWinSequence.length == winLength) && checkStatus) {
+            setWinSequence(tempWinSequence);
+        }
+
         return true;
     }
 
@@ -201,13 +216,21 @@ export default function Board({ squaresInRow, winLength, gameType }) {
                                 style += " border-r-2"
                             }
 
+                            if(winSequence.length == winLength){
+                                winSequence.forEach((row) => {
+                                    if(rowIndex == row[0] && colIndex == row[1]){
+                                        style += " text-red-600";
+                                    }                
+                                });
+                            }
+
                             const uniqueKey = rowIndex * squaresInRow + colIndex;
                             return (
                                 < Square
                                     key={uniqueKey}
                                     playerSymbol={gameField[rowIndex][colIndex]}
                                     onSquareClick={() => handleClick(rowIndex, colIndex, cell)}
-                                    borderStyle={style}
+                                    squareStyle={style}
                                 />
                             )
 
@@ -221,7 +244,7 @@ export default function Board({ squaresInRow, winLength, gameType }) {
     return (
         <>
             {renderField(gameField)}
-            <div className="text-4xl mt-12">{gameStatusMsg}</div>
+            <div className="text-4xl mt-4">{gameStatusMsg}</div>
         </>
     );
 }
