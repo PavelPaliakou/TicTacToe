@@ -15,7 +15,7 @@ export default function Square({ playerSymbol, onSquareClick, squareStyle }) {
   })
 
   return (
-    <button className={className} onClick={onSquareClick}>
+    <button className={className} onClick={onSquareClick} aria-label="game square">
       {playerSymbol}
     </button>
   )

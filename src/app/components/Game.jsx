@@ -41,45 +41,46 @@ export default function Game() {
           <div className="flex flex-col items-center">
             <div className="flex flex-row gap-2">
               <span>3</span>
-              <input type="range" min="3" max="5"
+              <input id="boardDimension" type="range" min="3" max="5"
                 value={boardDimension}
                 onChange={handleSetBoardDimension}
               />
               <span>5</span>
             </div>
-            <p>Dimension <span>{boardDimension}</span></p>
+            <label for="boardDimension">Dimension <span>{boardDimension}</span></label>
           </div>
 
           <div className="flex flex-col items-center">
             <div className="flex flex-row gap-2">
               <span>3</span>
-              <input type="range" min="3" max={boardDimension}
+              <input id="boardWinLength" type="range" min="3" max={boardDimension}
                 value={boardWinLength}
                 onChange={handleSetBoardWinLength}
               />
               <span>{boardDimension}</span>
             </div>
-            <p>Length to win <span>{boardWinLength}</span></p>
+            <label for="boardWinLength">Length to win <span>{boardWinLength}</span></label>
           </div>
 
-          <div className="flex flex-row justify-evenly mt-4">
+          <fieldset className="flex flex-row justify-evenly mt-4">
+            <legend className="hidden">Game type</legend>
             <div className="flex flex-row items-center gap-4">
-              <input type="radio" name="gameType" value={"true"} onChange={handleGameType} defaultChecked />
-              <label htmlFor="gameType">PvP</label>
+              <input id="PvPType" type="radio" name="gameType" value={"true"} onChange={handleGameType} defaultChecked />
+              <label for="PvPType">PvP</label>
             </div>
             <div className="flex flex-row items-center gap-4">
-              <input type="radio" name="gameType" value={"false"} onChange={handleGameType} />
-              <label htmlFor="gameType">PvAI</label>
+              <input id="PvAIType" type="radio" name="gameType" value={"false"} onChange={handleGameType} />
+              <label for="PvAIType">PvAI</label>
             </div>
-          </div>
-          
+          </fieldset>
+
         </div>
 
         <div className="w-full max-w-xs flex flex-col items-center my-4">
           <Board
             key={boardDimension + boardWinLength + gameType + newGame}
             squaresInRow={boardDimension}
-            winLength={boardWinLength} 
+            winLength={boardWinLength}
             gameType={gameType}
           />
         </div>
